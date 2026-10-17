@@ -1,0 +1,10 @@
+# Heavy media stays out of git (footage, renders, temp files)
+**/raw/
+**/work/
+**/out/
+*.mp4
+*.mov
+*.wav
+*.mp3
+__pycache__/
+.DS_Store
