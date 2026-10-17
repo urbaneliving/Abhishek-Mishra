@@ -1,0 +1,16 @@
+{
+  "name": "Urbane Living",
+  "tagline": "Where Design Finds Its Home",
+  "colors": {
+    "red": "#E50913",
+    "blue": "#4167B2",
+    "ink": "#000000",
+    "paper": "#FFFFFF"
+  },
+  "logo": {
+    "on_light": "_brand/urbane-living-logo-HD.png",
+    "on_dark": "_brand/urbane-living-logo-HD-white.png",
+    "white_background": "_brand/urbane-living-logo-HD-whitebg.png",
+    "source": "_brand/urbane-living-logo-original.png"
+  }
+}
