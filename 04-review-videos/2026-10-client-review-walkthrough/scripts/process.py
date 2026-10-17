@@ -7,7 +7,7 @@ mask=cv2.imread('work/mask_full.png',0)
 ys,xs=np.nonzero(mask); x1,y1,x2,y2=max(xs.min()-20,0),max(ys.min()-20,0),xs.max()+20,ys.max()+20
 sub=mask[y1:y2,x1:x2]
 dec=subprocess.Popen(['ffmpeg','-v','error',*extra,'-i',src,'-f','rawvideo','-pix_fmt','bgr24','-'],stdout=subprocess.PIPE)
-vf=("[0:v]scale=1920:1086:flags=lanczos,crop=1920:1080,unsharp=5:5:0.6,eq=contrast=1.03:saturation=1.06[v];"
+vf=("[0:v]deblock=filter=strong:block=8,hqdn3d=2:1.5:4:4,scale=1920:1086:flags=lanczos,crop=1920:1080,unsharp=5:5:0.9:3:3:0.4,eq=contrast=1.04:saturation=1.08:gamma=1.02[v];"
     "[v][2:v]overlay=4:6[out]")
 enc=subprocess.Popen(['ffmpeg','-v','error','-y','-f','rawvideo','-pix_fmt','bgr24','-s',f'{W}x{H}','-r','30','-i','-',
     *extra,'-i',src,'-i','work/logo_overlay.png','-filter_complex',vf,'-map','[out]','-map','1:a?',
