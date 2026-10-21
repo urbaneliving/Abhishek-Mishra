@@ -15,6 +15,7 @@ ROOT = Path(next(a for a in sys.argv[1:] if not a.startswith("--"))).resolve()
 CFG = json.loads((ROOT / "reel.json").read_text())
 STEP, TITLE, DAYS = CFG["step"], CFG["title"], int(CFG["days"])
 DAY0 = int(CFG.get("start_day", 1))           # project day this step starts on
+SUBTITLE = CFG.get("subtitle") or f"Duration: {DAYS} day{'s' * (DAYS != 1)}"
 PAN_TO = float(CFG.get("pan_to", 1.0))        # how far right the camera pans (0..1)
 W, H, FPS, DUR = 1080, 1920, 30, 10.0
 
@@ -83,7 +84,7 @@ def badge(c, t):
         dc = ImageDraw.Draw(clip)
         dc.text((x0 + R + 70 + shift, y0 - 62 + 40 * (1 - kt)), TITLE,
                 font=font(FONT_B, 64), fill=NAVY + (int(255 * kt),))
-        dc.text((x0 + R + 72 + shift, y0 + 14 + 30 * (1 - ks)), f"Duration: {DAYS} day{'s' * (DAYS != 1)}",
+        dc.text((x0 + R + 72 + shift, y0 + 14 + 30 * (1 - ks)), SUBTITLE,
                 font=font(FONT_M, 44), fill=NAVY + (int(255 * ks),))
         mask = Image.new("L", (W, H))
         ImageDraw.Draw(mask).rectangle((x0 + R + shift, y0 - 78, x0 + R + pw + shift, y0 + 78), 255)
@@ -125,7 +126,8 @@ def timeline_bar(c, t):
         xx, r = lerp(x1, x2, j / n), 11
         on = fill >= j / n
         d.ellipse((xx - r, y - r, xx + r, y + r), fill=(RED if on else (200, 208, 220)) + (a,))
-        d.text((xx, y - 42), f"Day {DAY0 + j}", font=font(FONT_M, 28), fill=NAVY + (int(a * .8),), anchor="mm")
+        if n <= 3:                                        # labels only while they fit
+            d.text((xx, y - 42), f"Day {DAY0 + j}", font=font(FONT_M, 28), fill=NAVY + (int(a * .8),), anchor="mm")
     c.alpha_composite(layer)
 
 
