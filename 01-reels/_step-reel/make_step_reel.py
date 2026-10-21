@@ -1,7 +1,7 @@
 """Step reel: animates a numbered false-ceiling site photo into a 9:16 short.
 
 Every frame is a pure function of t. Each project folder holds raw/<photo> and reel.json:
-    {"photo": "raw/x.webp", "step": "02", "title": "Board Installation", "days": 2, "slug": "board-installation"}
+    {"photo": "raw/x.webp", "step": "02", "title": "Board Installation", "days": 2, "start_day": 3, "slug": "board-installation"}
 Run from the repo root:
     python3 01-reels/_step-reel/make_step_reel.py 01-reels/<project> [--stills]
 """
@@ -14,6 +14,7 @@ REPO = Path(__file__).resolve().parents[2]
 ROOT = Path(next(a for a in sys.argv[1:] if not a.startswith("--"))).resolve()
 CFG = json.loads((ROOT / "reel.json").read_text())
 STEP, TITLE, DAYS = CFG["step"], CFG["title"], int(CFG["days"])
+DAY0 = int(CFG.get("start_day", 1))           # project day this step starts on
 W, H, FPS, DUR = 1080, 1920, 30, 10.0
 
 NAVY = (8, 56, 108)          # badge colour from the photo series
@@ -99,7 +100,7 @@ def badge(c, t):
 
 
 def timeline_bar(c, t):
-    """Bottom card: Day 1 → Day 2 progress line that fills with the pan."""
+    """Bottom card: first → last project day progress line that fills with the pan."""
     k = ease_out(prog(t, 1.6, 0.6)) * (1 - ease_out(prog(t, 7.0, 0.4)))
     if k <= 0:
         return
@@ -112,7 +113,7 @@ def timeline_bar(c, t):
     x1, x2 = 260, W - 260
     d.line((x1, y, x2, y), fill=(200, 208, 220, a), width=10)
     d.line((x1, y, lerp(x1, x2, fill), y), fill=RED + (a,), width=10)
-    for i, (xx, label) in enumerate(((x1, "Day 1"), (x2, f"Day {max(DAYS, 2)}"))):
+    for i, (xx, label) in enumerate(((x1, f"Day {DAY0}"), (x2, f"Day {DAY0 + max(DAYS, 2) - 1}"))):
         on = fill >= i
         r = 18
         d.ellipse((xx - r, y - r, xx + r, y + r), fill=(RED if on else (200, 208, 220)) + (a,))
