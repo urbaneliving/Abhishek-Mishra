@@ -18,5 +18,6 @@ Footage and renders are not stored in git (see `.gitignore`).
 ## Projects
 | Date | Project | Status |
 |---|---|---|
+| 2026-10 | `01-reels/2026-10-board-installation-reel`: step-02 site photo → 10 s animated 9:16 reel (shared `01-reels/_step-reel` template) | ✅ Done |
 | 2026-10 | `01-reels/2026-10-framing-channels-reel`: step-01 site photo → 10 s animated 9:16 reel | ✅ Done |
 | 2026-10 | `04-review-videos/2026-10-client-review-walkthrough`: old logo → Urbane Living, 1080p | ✅ Done |

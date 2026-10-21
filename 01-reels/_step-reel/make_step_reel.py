@@ -1,15 +1,19 @@
-"""Framing & Channels reel: animates the step-01 site photo into a 9:16 short.
+"""Step reel: animates a numbered false-ceiling site photo into a 9:16 short.
 
-Every frame is a pure function of t. Run from the repo root:
-    python3 01-reels/2026-10-framing-channels-reel/scripts/make_reel.py [--stills]
+Every frame is a pure function of t. Each project folder holds raw/<photo> and reel.json:
+    {"photo": "raw/x.webp", "step": "02", "title": "Board Installation", "days": 2, "slug": "board-installation"}
+Run from the repo root:
+    python3 01-reels/_step-reel/make_step_reel.py 01-reels/<project> [--stills]
 """
-import math, subprocess, sys, wave
+import json, math, subprocess, sys, wave
 from pathlib import Path
 import numpy as np
 from PIL import Image, ImageChops, ImageDraw, ImageFilter, ImageFont
 
-ROOT = Path(__file__).resolve().parents[1]
-REPO = ROOT.parents[1]
+REPO = Path(__file__).resolve().parents[2]
+ROOT = Path(next(a for a in sys.argv[1:] if not a.startswith("--"))).resolve()
+CFG = json.loads((ROOT / "reel.json").read_text())
+STEP, TITLE, DAYS = CFG["step"], CFG["title"], int(CFG["days"])
 W, H, FPS, DUR = 1080, 1920, 30, 10.0
 
 NAVY = (8, 56, 108)          # badge colour from the photo series
@@ -20,7 +24,7 @@ FONT_M = "/usr/share/fonts/opentype/inter/InterDisplay-Medium.otf"
 font = lambda path, size: ImageFont.truetype(path, int(size))
 
 # --- source: drop the baked-in badge strip at the top, upscale once ---
-src = Image.open(ROOT / "raw/framing-channels.webp").convert("RGB")
+src = Image.open(ROOT / CFG["photo"]).convert("RGB")
 src = src.crop((0, 180, src.width, src.height))
 BIG_H = int(H * 1.18)                                 # headroom for the zoom
 BIG = src.resize((round(src.width * BIG_H / src.height), BIG_H), Image.LANCZOS)
@@ -55,7 +59,7 @@ def camera(t):
 
 
 def badge(c, t):
-    """'01 · Framing & Channels' badge: circle pops, pill slides out, text rises."""
+    """Step badge: circle pops, pill slides out, text rises."""
     kc = prog(t, 0.6, 0.5)
     if kc <= 0:
         return
@@ -65,7 +69,7 @@ def badge(c, t):
     # pill
     kp = ease_out(prog(t, 0.95, 0.5))
     if kp > 0:
-        pw = lerp(0, 760, kp)
+        pw = lerp(0, max(560, font(FONT_B, 64).getlength(TITLE) + 120), kp)
         pill = Image.new("RGBA", (W, H))
         d = ImageDraw.Draw(pill)
         d.rounded_rectangle((x0 + R + shift, y0 - 78, x0 + R + pw + shift, y0 + 78), 30,
@@ -75,9 +79,9 @@ def badge(c, t):
         ks = ease_out(prog(t, 1.5, 0.45))
         clip = Image.new("RGBA", (W, H))
         dc = ImageDraw.Draw(clip)
-        dc.text((x0 + R + 70 + shift, y0 - 62 + 40 * (1 - kt)), "Framing & Channels",
+        dc.text((x0 + R + 70 + shift, y0 - 62 + 40 * (1 - kt)), TITLE,
                 font=font(FONT_B, 64), fill=NAVY + (int(255 * kt),))
-        dc.text((x0 + R + 72 + shift, y0 + 14 + 30 * (1 - ks)), "Duration: 2 days",
+        dc.text((x0 + R + 72 + shift, y0 + 14 + 30 * (1 - ks)), f"Duration: {DAYS} day{'s' * (DAYS != 1)}",
                 font=font(FONT_M, 44), fill=NAVY + (int(255 * ks),))
         mask = Image.new("L", (W, H))
         ImageDraw.Draw(mask).rectangle((x0 + R + shift, y0 - 78, x0 + R + pw + shift, y0 + 78), 255)
@@ -91,7 +95,7 @@ def badge(c, t):
     d.ellipse((cx - s, y0 - s, cx + s, y0 + s), fill=NAVY)
     if kc > .4:
         f = font(FONT_B, 100 * min(1, s / R))
-        d.text((cx, y0 + 4), "01", font=f, fill=WHITE, anchor="mm")
+        d.text((cx, y0 + 4), STEP, font=f, fill=WHITE, anchor="mm")
 
 
 def timeline_bar(c, t):
@@ -108,7 +112,7 @@ def timeline_bar(c, t):
     x1, x2 = 260, W - 260
     d.line((x1, y, x2, y), fill=(200, 208, 220, a), width=10)
     d.line((x1, y, lerp(x1, x2, fill), y), fill=RED + (a,), width=10)
-    for i, (xx, label) in enumerate(((x1, "Day 1"), (x2, "Day 2"))):
+    for i, (xx, label) in enumerate(((x1, "Day 1"), (x2, f"Day {max(DAYS, 2)}"))):
         on = fill >= i
         r = 18
         d.ellipse((xx - r, y - r, xx + r, y + r), fill=(RED if on else (200, 208, 220)) + (a,))
@@ -135,7 +139,7 @@ def outro(c, t):
         c.alpha_composite(logo, (W // 2 - logo.width // 2, 840 - logo.height // 2))
     d = ImageDraw.Draw(c)
     for i, (txt, f, col, yy, s) in enumerate((
-        ("Step 01 · Framing & Channels", font(FONT_B, 52), NAVY, 1160, 8.4),
+        (f"Step {STEP} · {TITLE}", font(FONT_B, 52), NAVY, 1160, 8.4),
         ("False ceiling, done right.", font(FONT_M, 44), (90, 100, 115), 1240, 8.7),
     )):
         kt = ease_out(prog(t, s, 0.5))
@@ -207,7 +211,7 @@ def main():
             frame(t).save(work / f"still_{t:04.1f}.jpg", quality=90)
         return
     audio(work / "sfx.wav")
-    dst = out / "framing-channels-reel-9x16.mp4"
+    dst = out / f"{CFG['slug']}-reel-9x16.mp4"
     ff = subprocess.Popen(
         ["ffmpeg", "-y", "-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "rgb24",
          "-s", f"{W}x{H}", "-r", str(FPS), "-i", "-", "-i", str(work / "sfx.wav"),
