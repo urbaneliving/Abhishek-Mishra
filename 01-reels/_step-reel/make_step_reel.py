@@ -15,6 +15,7 @@ ROOT = Path(next(a for a in sys.argv[1:] if not a.startswith("--"))).resolve()
 CFG = json.loads((ROOT / "reel.json").read_text())
 STEP, TITLE, DAYS = CFG["step"], CFG["title"], int(CFG["days"])
 DAY0 = int(CFG.get("start_day", 1))           # project day this step starts on
+PAN_TO = float(CFG.get("pan_to", 1.0))        # how far right the camera pans (0..1)
 W, H, FPS, DUR = 1080, 1920, 30, 10.0
 
 NAVY = (8, 56, 108)          # badge colour from the photo series
@@ -48,7 +49,7 @@ def ease_back(k, s=1.7):
 
 def camera(t):
     """Pan from the left worker to the right one, then ease back to a wider frame."""
-    pan = ease_io(prog(t, 0.0, 7.2))
+    pan = ease_io(prog(t, 0.0, 7.2)) * PAN_TO
     zoom = lerp(1.18, 1.0, ease_io(prog(t, 4.5, 3.5)))  # 1.0 == BIG fits frame height
     ch = BIG_H / zoom
     cw = ch * W / H
@@ -119,6 +120,12 @@ def timeline_bar(c, t):
         d.ellipse((xx - r, y - r, xx + r, y + r), fill=(RED if on else (200, 208, 220)) + (a,))
         tx = 150 if i == 0 else W - 150
         d.text((tx, y), label, font=font(FONT_B, 40), fill=NAVY + (a,), anchor="mm")
+    n = max(DAYS, 2) - 1                                  # in-between days get a small dot
+    for j in range(1, n):
+        xx, r = lerp(x1, x2, j / n), 11
+        on = fill >= j / n
+        d.ellipse((xx - r, y - r, xx + r, y + r), fill=(RED if on else (200, 208, 220)) + (a,))
+        d.text((xx, y - 42), f"Day {DAY0 + j}", font=font(FONT_M, 28), fill=NAVY + (int(a * .8),), anchor="mm")
     c.alpha_composite(layer)
 
 
