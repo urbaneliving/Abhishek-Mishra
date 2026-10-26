@@ -12,5 +12,9 @@
     "on_dark": "_brand/urbane-living-logo-HD-white.png",
     "white_background": "_brand/urbane-living-logo-HD-whitebg.png",
     "source": "_brand/urbane-living-logo-original.png"
+  },
+  "contact": {
+    "whatsapp": "+91 9105052454",
+    "whatsapp_link": "https://wa.me/919105052454"
   }
 }

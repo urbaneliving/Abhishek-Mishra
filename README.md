@@ -4,7 +4,7 @@ Made with the Ideabro Studio Vibe Editing System.
 
 | Folder | What goes here |
 |---|---|
-| `_brand/` | Logos (HD, light/dark), `brand.json` colours + tagline |
+| `_brand/` | Logos (HD, light/dark), `brand.json` colours, tagline + contact (WhatsApp +91 9105052454: use on every post/caption) |
 | `01-reels/` | Instagram / YouTube reels (9:16) |
 | `02-ads/` | Ads + variants (9:16, 4:5, 1:1, 16:9) |
 | `03-posters/` | Posters and static creatives |
