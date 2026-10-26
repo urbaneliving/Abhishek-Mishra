@@ -18,6 +18,7 @@ Footage and renders are not stored in git (see `.gitignore`).
 ## Projects
 | Date | Project | Status |
 |---|---|---|
+| 2026-10 | `03-posters/2026-10-modular-kitchen-poster`: modular kitchen poster, 1080×1350 for FB + Instagram | ✅ Done |
 | 2026-10 | `01-reels/2026-10-enjoy-new-look-reel`: step-04 finished ceiling → 10 s animated 9:16 reel (Day 1 → Day 7) | ✅ Done |
 | 2026-10 | `01-reels/2026-10-finishing-reel`: step-03 site photo → 10 s animated 9:16 reel (Day 5 → Day 7) | ✅ Done |
 | 2026-10 | `01-reels/2026-10-board-installation-reel`: step-02 site photo → 10 s animated 9:16 reel (shared `01-reels/_step-reel` template) | ✅ Done |
